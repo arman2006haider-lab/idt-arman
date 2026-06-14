@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="{{ farm.language if farm is defined else 'en' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ t('en','app_name') }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Noto+Sans:wght@400;500;600&family=Noto+Sans+Kannada:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <a href="{{ url_for('index') }}" style="text-decoration:none;">
+        <span class="brand-mark">🌾 Crop Guard</span>
+      </a>
+      <span class="brand-tagline">{{ t('en','tagline') }}</span>
+    </div>
+    <nav class="topnav">
+      <a href="{{ url_for('index') }}">My Farms</a>
+      <a href="{{ url_for('add_farm') }}">Add Farm</a>
+    </nav>
+  </div>
+
+  <div class="page">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="flash">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

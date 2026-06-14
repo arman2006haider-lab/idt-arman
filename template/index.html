@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Crop Guard — My Farms{% endblock %}
+{% block content %}
+
+<h1 class="section-title" style="margin-top:36px;">{{ t('en','farms_title') }}</h1>
+
+{% if farms %}
+  <div class="grid grid-2">
+    {% for farm in farms %}
+      <a class="card farm-card" href="{{ url_for('dashboard', farm_id=farm.id) }}">
+        <div class="farm-name">{{ farm.name }}</div>
+        <div class="farm-location">📍 {{ farm.location_name }}</div>
+        <div class="farm-meta">
+          <span class="tag">{{ farm.crop_type }}</span>
+          <span class="tag">{{ LANGUAGES[farm.language] }}</span>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <p>{{ t('en','no_farms') }}</p>
+  </div>
+{% endif %}
+
+<div class="actions-row">
+  <a class="btn btn-primary" href="{{ url_for('add_farm') }}">+ {{ t('en','add_farm_title') }}</a>
+  {% if not farms %}
+    <a class="btn" href="{{ url_for('seed_demo') }}">Load demo farms (sample data)</a>
+  {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}{{ farm.name }} — {{ t('en','app_name') }}{% endblock %}
+{% block content %}
+
+<div class="dashboard-header">
+  <div class="dashboard-title">
+    <h1>{{ farm.name }}</h1>
+    <div class="location">📍 {{ farm.location_name }} &nbsp;·&nbsp; <span class="tag">{{ farm.crop_type }}</span></div>
+  </div>
+
+  <div>
+    <div class="lang-switch">
+      {% for code, label in LANGUAGES.items() %}
+        <form method="POST" action="{{ url_for('set_language', farm_id=farm.id) }}" style="display:inline;">
+          <input type="hidden" name="language" value="{{ code }}">
+          <button type="submit" class="{{ 'active' if lang == code else '' }}">{{ label }}</button>
+        </form>
+      {% endfor %}
+    </div>
+    <p class="help-text" style="text-align:right; margin-top:6px;">
+      {{ t(lang,'device_token') }}: <span class="token-box">{{ farm.device_token }}</span>
+    </p>
+  </div>
+</div>
+
+<!-- Risk gauge -->
+<div class="card gauge-card" style="margin-top:18px;" id="gauge-card">
+  <svg viewBox="0 0 200 120" width="220" height="132" aria-hidden="true">
+    <path d="M 20 100 A 80 80 0 0 1 43.43 43.43" fill="none" stroke="var(--safe)" stroke-width="14" stroke-linecap="round"/>
+    <path d="M 43.43 43.43 A 80 80 0 0 1 100 20" fill="none" stroke="var(--watch)" stroke-width="14" stroke-linecap="round"/>
+    <path d="M 100 20 A 80 80 0 0 1 156.57 43.43" fill="none" stroke="var(--alert)" stroke-width="14" stroke-linecap="round"/>
+    <path d="M 156.57 43.43 A 80 80 0 0 1 180 100" fill="none" stroke="var(--severe)" stroke-width="14" stroke-linecap="round"/>
+    <line id="gauge-needle" x1="100" y1="100" x2="{{ needle[0] }}" y2="{{ needle[1] }}"
+          stroke="var(--text)" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="100" cy="100" r="6" fill="var(--text)"/>
+  </svg>
+  <div class="gauge-label">
+    <div class="gauge-sub">{{ t(lang,'risk_level') }}</div>
+    <div class="gauge-level-name {{ risk }}" id="gauge-level-name">{{ t(lang, 'risk.' + risk) }}</div>
+    <div class="gauge-sub">{{ t(lang,'forecast_title') }} · {{ t(lang,'source.forecast') }}</div>
+  </div>
+</div>
+
+<!-- Sensor readings -->
+<h2 class="section-title">{{ t(lang,'sensors_title') }}</h2>
+{% if reading %}
+  <div class="grid grid-4" id="sensor-grid">
+    <div class="card sensor-card">
+      <div class="sensor-icon">🌱</div>
+      <div class="sensor-value" id="val-soil">{{ reading.soil_moisture }}{{ t(lang,'percent') }}</div>
+      <div class="sensor-label">{{ t(lang,'soil_moisture') }}</div>
+    </div>
+    <div class="card sensor-card">
+      <div class="sensor-icon">🌧️</div>
+      <div class="sensor-value" id="val-rain">{{ reading.rain_intensity }} {{ t(lang,'mm') }}/hr</div>
+      <div class="sensor-label">{{ t(lang,'rain_intensity') }}</div>
+    </div>
+    <div class="card sensor-card">
+      <div class="sensor-icon">🌡️</div>
+      <div class="sensor-value" id="val-temp">{{ reading.air_temperature }}°C</div>
+      <div class="sensor-label">{{ t(lang,'air_temperature') }}</div>
+    </div>
+    <div class="card sensor-card">
+      <div class="sensor-icon">💧</div>
+      <div class="sensor-value" id="val-humidity">{{ reading.air_humidity }}{{ t(lang,'percent') }}</div>
+      <div class="sensor-label">{{ t(lang,'air_humidity') }}</div>
+    </div>
+  </div>
+  <p class="data-source-note" id="last-updated">{{ t(lang,'last_updated') }}: {{ reading.timestamp }} UTC · {{ reading.device_id }}</p>
+{% else %}
+  <div class="empty-state">
+    <p>{{ t(lang,'no_readings') }}</p>
+    <form method="POST" action="{{ url_for('load_demo', farm_id=farm.id) }}">
+      <button type="submit" class="btn btn-primary">{{ t(lang,'load_demo') }}</button>
+    </form>
+  </div>
+{% endif %}
+
+<!-- Forecast -->
+<h2 class="section-title">{{ t(lang,'forecast_title') }}</h2>
+<div class="forecast-strip">
+  {% for day in forecast %}
+    {% set day_alerts = alerts | selectattr('day_offset', 'equalto', loop.index0) | list %}
+    {% set has_severe = day_alerts | selectattr('level','equalto','severe') | list | length > 0 %}
+    {% set has_alert = day_alerts | selectattr('level','equalto','alert') | list | length > 0 %}
+    {% set has_watch = day_alerts | selectattr('level','equalto','watch') | list | length > 0 %}
+    <div class="forecast-day {{ 'has-severe' if has_severe else 'has-alert' if has_alert else 'has-watch' if has_watch else '' }}">
+      <div class="day-label">{{ day.label }}</div>
+      <div class="temps"><span class="tmax">{{ day.tmax }}°</span> / <span class="tmin">{{ day.tmin }}°</span></div>
+      <div class="precip">🌧️ {{ day.precip_mm }}{{ t(lang,'mm') }} ({{ day.precip_prob }}{{ t(lang,'percent') }})</div>
+      <div class="precip">💨 {{ day.wind_max }} km/h</div>
+    </div>
+  {% endfor %}
+</div>
+<p class="data-source-note">
+  {{ t(lang, 'data_source.' + forecast_source) }}
+</p>
+
+<!-- Alerts -->
+<h2 class="section-title">{{ t(lang,'alerts_title') }}</h2>
+<div id="alerts-list">
+  {% if alerts %}
+    {% for a in alerts %}
+      <div class="alert-item {{ a.level }}">
+        <div class="alert-title">
+          <span>{{ a.title }}</span>
+          <span class="level-pill {{ a.level }}">{{ t(lang, 'risk.' + a.level) }}</span>
+        </div>
+        <div class="alert-meta">
+          {{ t(lang, 'source.sensor') if a.hazard in ['dry_soil','waterlogged_soil','flood'] else t(lang, 'source.forecast') }}
+        </div>
+        <div class="alert-message">{{ a.message }}</div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">{{ t(lang,'no_alerts') }}</div>
+  {% endif %}
+</div>
+
+<!-- Controls -->
+<div class="controls-row">
+  <label>
+    <input type="checkbox" id="alarm-toggle">
+    {{ t(lang,'alarm_sound') }}
+  </label>
+  {% if reading %}
+  <form method="POST" action="{{ url_for('load_demo', farm_id=farm.id) }}">
+    <button type="submit" class="btn">{{ t(lang,'load_demo') }} (refresh)</button>
+  </form>
+  {% endif %}
+</div>
+
+<script>
+  window.CROP_GUARD = {
+    farmId: {{ farm.id }},
+    lang: {{ lang|tojson }},
+    translations: {
+      sourceSensor: {{ t(lang,'source.sensor')|tojson }},
+      sourceForecast: {{ t(lang,'source.forecast')|tojson }},
+      percent: {{ t(lang,'percent')|tojson }},
+      mm: {{ t(lang,'mm')|tojson }},
+      riskSafe: {{ t(lang,'risk.safe')|tojson }},
+      riskWatch: {{ t(lang,'risk.watch')|tojson }},
+      riskAlert: {{ t(lang,'risk.alert')|tojson }},
+      riskSevere: {{ t(lang,'risk.severe')|tojson }},
+      noAlerts: {{ t(lang,'no_alerts')|tojson }},
+      lastUpdated: {{ t(lang,'last_updated')|tojson }}
+    },
+    needlePos: {{ needle_positions|tojson }}
+  };
+</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+{% endblock %}

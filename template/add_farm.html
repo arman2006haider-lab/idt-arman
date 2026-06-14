@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Crop Guard — {{ t('en','add_farm_title') }}{% endblock %}
+{% block content %}
+
+<h1 class="section-title" style="margin-top:36px;">{{ t('en','add_farm_title') }}</h1>
+
+<div class="card" style="max-width:520px;">
+  <form method="POST">
+    <div class="field">
+      <label for="name">{{ t('en','farm_name') }}</label>
+      <input type="text" id="name" name="name" required placeholder="e.g. Hosalli Paddy Farm">
+    </div>
+
+    <div class="field">
+      <label for="location_name">{{ t('en','location_name') }}</label>
+      <input type="text" id="location_name" name="location_name" required placeholder="e.g. Mandya, Karnataka">
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="lat">{{ t('en','latitude') }}</label>
+        <input type="number" step="any" id="lat" name="lat" required placeholder="12.5242">
+      </div>
+      <div class="field">
+        <label for="lon">{{ t('en','longitude') }}</label>
+        <input type="number" step="any" id="lon" name="lon" required placeholder="76.8958">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="language">{{ t('en','language') }}</label>
+        <select id="language" name="language">
+          {% for code, label in LANGUAGES.items() %}
+            <option value="{{ code }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="crop_type">{{ t('en','crop_type') }}</label>
+        <select id="crop_type" name="crop_type">
+          {% for c in CROP_TYPES %}
+            <option value="{{ c }}">{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <p class="help-text">
+      Tip: not sure of coordinates? Search "&lt;your village&gt; latitude longitude" — or
+      use a Karnataka example: Mandya 12.5242, 76.8958.
+    </p>
+
+    <button type="submit" class="btn btn-primary">{{ t('en','save') }}</button>
+  </form>
+</div>
+
+{% endblock %}
