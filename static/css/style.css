@@ -1,0 +1,531 @@
+/* =========================================================
+   Crop Guard — design tokens
+   Inspired by the Indian agricultural almanac (panchang):
+   deep indigo dusk sky, ripe-grain gold, monsoon blue,
+   terracotta alert tones.
+   ========================================================= */
+
+:root {
+  --bg: #1c2b27;
+  --bg-deep: #16221f;
+  --bg-card: #243a35;
+  --bg-card-alt: #2c4640;
+  --border: rgba(243, 239, 227, 0.12);
+  --border-strong: rgba(243, 239, 227, 0.22);
+
+  --text: #f3efe3;
+  --text-dim: #aebfb8;
+  --text-faint: #7f9690;
+
+  --accent-gold: #e0b15c;
+  --accent-gold-soft: rgba(224, 177, 92, 0.16);
+  --accent-sky: #7fb6d9;
+  --accent-sky-soft: rgba(127, 182, 217, 0.14);
+
+  --safe: #6fae6a;
+  --watch: #e0b15c;
+  --alert: #e08a4c;
+  --severe: #d1503f;
+
+  --safe-soft: rgba(111, 174, 106, 0.16);
+  --watch-soft: rgba(224, 177, 92, 0.16);
+  --alert-soft: rgba(224, 138, 76, 0.16);
+  --severe-soft: rgba(209, 80, 63, 0.18);
+
+  --radius: 14px;
+  --radius-sm: 8px;
+
+  --font-display: 'Fraunces', 'Noto Serif', serif;
+  --font-body: 'Noto Sans', 'Noto Sans Kannada', 'Noto Sans Devanagari', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: radial-gradient(circle at 15% -10%, #2a4039 0%, var(--bg) 45%, var(--bg-deep) 100%);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--accent-sky);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------- */
+/* Layout                                                             */
+/* ---------------------------------------------------------------- */
+
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 20px;
+  border-bottom: 1px solid var(--border);
+  max-width: 1080px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.brand-mark {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--accent-gold);
+}
+
+.brand-tagline {
+  font-size: 0.85rem;
+  color: var(--text-faint);
+}
+
+.topnav {
+  display: flex;
+  gap: 18px;
+  font-size: 0.92rem;
+}
+
+.topnav a {
+  color: var(--text-dim);
+}
+.topnav a:hover {
+  color: var(--accent-gold);
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------------- */
+/* Flash messages                                                     */
+/* ---------------------------------------------------------------- */
+
+.flash {
+  background: var(--accent-gold-soft);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin: 20px 0;
+  font-size: 0.92rem;
+  color: var(--accent-gold);
+}
+
+/* ---------------------------------------------------------------- */
+/* Cards / sections                                                   */
+/* ---------------------------------------------------------------- */
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  margin: 36px 0 14px;
+  color: var(--text);
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+/* ---------------------------------------------------------------- */
+/* Farm list (index page)                                             */
+/* ---------------------------------------------------------------- */
+
+.farm-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.farm-card:hover {
+  border-color: var(--accent-gold);
+  transform: translateY(-2px);
+}
+.farm-card .farm-name {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.farm-card .farm-location {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+.farm-card .farm-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: var(--accent-sky-soft);
+  color: var(--accent-sky);
+  border: 1px solid transparent;
+}
+
+.empty-state {
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+.actions-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+/* ---------------------------------------------------------------- */
+/* Buttons / forms                                                    */
+/* ---------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 100px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-card-alt);
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.btn:hover {
+  border-color: var(--accent-gold);
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--accent-gold);
+  color: #2a1d09;
+  border-color: var(--accent-gold);
+  font-weight: 600;
+}
+.btn-primary:hover {
+  background: #ecc27a;
+}
+
+form .field {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+form label {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+input, select {
+  background: var(--bg-deep);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+input:focus, select:focus, button:focus {
+  outline: 2px solid var(--accent-gold);
+  outline-offset: 1px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.help-text {
+  font-size: 0.8rem;
+  color: var(--text-faint);
+}
+
+.token-box {
+  font-family: monospace;
+  background: var(--bg-deep);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  display: inline-block;
+}
+
+/* ---------------------------------------------------------------- */
+/* Dashboard header / risk gauge                                      */
+/* ---------------------------------------------------------------- */
+
+.dashboard-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 28px;
+}
+
+.dashboard-title h1 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  margin: 0 0 4px;
+}
+.dashboard-title .location {
+  color: var(--text-dim);
+}
+
+.lang-switch {
+  display: flex;
+  gap: 8px;
+}
+
+.lang-switch button {
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+}
+.lang-switch button.active {
+  background: var(--accent-gold);
+  color: #2a1d09;
+  border-color: var(--accent-gold);
+  font-weight: 600;
+}
+
+.gauge-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.gauge-label {
+  text-align: center;
+}
+
+.gauge-level-name {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  margin: 6px 0 2px;
+}
+
+.gauge-level-name.safe { color: var(--safe); }
+.gauge-level-name.watch { color: var(--watch); }
+.gauge-level-name.alert { color: var(--alert); }
+.gauge-level-name.severe { color: var(--severe); }
+
+.gauge-sub {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+/* ---------------------------------------------------------------- */
+/* Sensor cards                                                       */
+/* ---------------------------------------------------------------- */
+
+.sensor-card {
+  text-align: center;
+}
+.sensor-card .sensor-value {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  margin: 6px 0 2px;
+}
+.sensor-card .sensor-label {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+.sensor-card .sensor-icon {
+  font-size: 1.4rem;
+}
+
+/* ---------------------------------------------------------------- */
+/* Forecast strip                                                     */
+/* ---------------------------------------------------------------- */
+
+.forecast-strip {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.forecast-day {
+  flex: 0 0 130px;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  padding: 14px 10px;
+  background: var(--bg-card-alt);
+}
+
+.forecast-day .day-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.forecast-day .temps {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.forecast-day .temps .tmin {
+  color: var(--text-faint);
+}
+
+.forecast-day .precip {
+  font-size: 0.78rem;
+  color: var(--accent-sky);
+}
+
+.forecast-day.has-severe {
+  border-color: var(--severe);
+  background: var(--severe-soft);
+}
+.forecast-day.has-alert {
+  border-color: var(--alert);
+  background: var(--alert-soft);
+}
+.forecast-day.has-watch {
+  border-color: var(--watch);
+  background: var(--watch-soft);
+}
+
+.data-source-note {
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  margin-top: 8px;
+}
+
+/* ---------------------------------------------------------------- */
+/* Alerts                                                             */
+/* ---------------------------------------------------------------- */
+
+.alert-item {
+  border-left: 4px solid var(--border-strong);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card-alt);
+  margin-bottom: 10px;
+}
+.alert-item.watch { border-left-color: var(--watch); }
+.alert-item.alert { border-left-color: var(--alert); }
+.alert-item.severe { border-left-color: var(--severe); }
+
+.alert-item .alert-title {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.alert-item .alert-meta {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.alert-item .alert-message {
+  font-size: 0.92rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+.level-pill {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+.level-pill.watch { background: var(--watch-soft); color: var(--watch); }
+.level-pill.alert { background: var(--alert-soft); color: var(--alert); }
+.level-pill.severe { background: var(--severe-soft); color: var(--severe); }
+
+/* ---------------------------------------------------------------- */
+/* Footer controls                                                    */
+/* ---------------------------------------------------------------- */
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+
+.controls-row label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-header {
+    flex-direction: column;
+  }
+}
